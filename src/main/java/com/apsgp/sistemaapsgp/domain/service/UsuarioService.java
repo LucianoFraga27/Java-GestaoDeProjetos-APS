@@ -3,6 +3,7 @@ package com.apsgp.sistemaapsgp.domain.service;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.apsgp.sistemaapsgp.domain.exception.NegocioException;
 import com.apsgp.sistemaapsgp.domain.repository.UsuarioRepository;
