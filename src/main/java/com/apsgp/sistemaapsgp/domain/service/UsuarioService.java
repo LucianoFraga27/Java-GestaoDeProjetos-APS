@@ -27,7 +27,7 @@ public class UsuarioService {
 	
 	@Transactional
 	public Usuario salvar(Usuario usuario) {
-		boolean emailJaExistente = usuarioRepository.findByEmail(usuario)
+		boolean emailJaExistente = usuarioRepository.findByEmail(usuario.getEmail())
 													.stream()
 													.anyMatch(usuarioExistente -> !usuarioExistente.equals(usuario));
 		if(emailJaExistente == true) {
@@ -43,3 +43,5 @@ public class UsuarioService {
 	}
 	
 }
+
+

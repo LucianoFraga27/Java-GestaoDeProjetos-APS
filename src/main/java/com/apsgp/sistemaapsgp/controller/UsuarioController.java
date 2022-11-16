@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,7 +30,7 @@ public class UsuarioController {
 
 	
 	private UsuarioRepository usuarioRepository;
-	//private UsuarioService usuarioService;
+	private UsuarioService usuarioService;
 	
 	@GetMapping("/listar")
 	public java.util.List<Usuario> listarUsuarios() {
@@ -47,9 +48,17 @@ public class UsuarioController {
 	@PostMapping("/cadastrar")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Usuario cadastrarUsuario(@Valid @RequestBody Usuario usuario) {
-		
-		return usuarioRepository.save(usuario);
-		//return usuarioService.salvar(usuario);
+		return usuarioService.salvar(usuario);
 	}
-
+	
+	@PutMapping("/{usuarioId}")
+	public ResponseEntity<Usuario> atualizar(@Valid @PathVariable Long usuarioId, @RequestBody Usuario usuario){
+		if(!usuarioRepository.existsById(usuarioId)) {
+			return ResponseEntity.notFound().build();
+		}
+		usuario.setId(usuarioId);
+		usuario = usuarioService.salvar(usuario);
+		return ResponseEntity.ok(usuario);
+	}
+	
 }

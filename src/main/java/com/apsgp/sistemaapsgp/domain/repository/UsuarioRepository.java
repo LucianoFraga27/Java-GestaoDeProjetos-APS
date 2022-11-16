@@ -13,5 +13,5 @@ import com.apsgp.sistemaapsgp.model.Usuario;
 public interface UsuarioRepository extends JpaRepository <Usuario, Long>{
 	List<Usuario> findByNome(String nome);
 	List<Usuario> findByNomeContaining(String Nome);
-	Optional<Usuario> findByEmail(Usuario usuario);
+	Optional<Usuario> findByEmail(String email);
 }
