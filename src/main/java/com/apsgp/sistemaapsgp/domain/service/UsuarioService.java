@@ -3,7 +3,6 @@ package com.apsgp.sistemaapsgp.domain.service;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.apsgp.sistemaapsgp.domain.exception.NegocioException;
 import com.apsgp.sistemaapsgp.domain.repository.UsuarioRepository;
@@ -37,11 +36,21 @@ public class UsuarioService {
 			return usuarioRepository.save(usuario);
 		}
 	}
+
 	
 	@Transactional
 	public void excluir(Long usuarioId) {
 		usuarioRepository.deleteById(usuarioId);
 	}
+	
+	
+	
+	
+	public Usuario loginUsuario (String email, String senha) throws NegocioException {
+		Usuario userLogin = usuarioRepository.buscarLogin(email, senha);
+		return userLogin;
+	}
+	
 	
 }
 

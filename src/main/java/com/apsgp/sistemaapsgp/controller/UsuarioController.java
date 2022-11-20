@@ -1,13 +1,17 @@
 package com.apsgp.sistemaapsgp.controller;
 
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.apsgp.sistemaapsgp.domain.exception.NegocioException;
 import com.apsgp.sistemaapsgp.domain.repository.UsuarioRepository;
 import com.apsgp.sistemaapsgp.domain.service.UsuarioService;
 import com.apsgp.sistemaapsgp.model.Usuario;
@@ -26,14 +32,23 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/api")
 public class UsuarioController {
 
 	
 	private UsuarioRepository usuarioRepository;
 	private UsuarioService usuarioService;
 	
-	@GetMapping("/listar")
+	
+	@GetMapping("/index")
+	public ModelAndView index() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("home/index");
+		mv.addObject("usuario", new Usuario());
+		return mv;
+	}
+	
+	@GetMapping("/usuarios")
 	@ResponseStatus(HttpStatus.OK)
 	public java.util.List<Usuario> listarUsuarios() {
 		return usuarioRepository.findAll();	
@@ -53,6 +68,7 @@ public class UsuarioController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public Usuario cadastrarUsuario(@Valid @RequestBody Usuario usuario) {
 		return usuarioService.salvar(usuario);
+		
 	}
 	
 	
@@ -79,6 +95,43 @@ public class UsuarioController {
 	}
 	
 	
+	/*Login
+	 * */
+	
+	@PostMapping("/login")
+	public ModelAndView login (@Valid @RequestBody Usuario usuario, BindingResult br, HttpSession session ) throws NoSuchAlgorithmException, NegocioException {
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("Usuario",new Usuario());
+		if(br.hasErrors()) {
+			mv.setViewName("Login/login");
+		}
+		Usuario usuarioLogin =  usuarioService.loginUsuario(usuario.getEmail(), usuario.getSenha());
+		if(usuarioLogin == null) {
+			mv.addObject("msg","usuario nao encontrado.");
+		} else {
+			session.setAttribute("usuarioLogado", usuarioLogin);
+			return index();
+		}
+		return mv;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -87,52 +140,4 @@ public class UsuarioController {
 	
 	
 
-	@GetMapping("/helpAPI")
-	public String helpAPI() {
-		String str = "Funcionalidades da API"
-				+ "\n-----------------------------"
-				+ "\nNome: listar Usuarios,"
-				+ "\nVerbo: GET,"
-				+ "\nendereço: localhost:8080/usuario/listar,"
-				+ "\nexemplo: [];"
-				+"\n-----------------------------"
-				+ "\nNome: encontra Usuario,"
-				+ "\nVerbo: GET,"
-				+ "\nendereço: localhost:8080/usuario/{id},"
-				+ "\nexemplo: [1,2,3,4,5];"
-				+"\n-----------------------------"
-				+ "\nNome: cadastrar Usuarios,"
-				+ "\nVerbo: POST,"
-				+ "\nendereço: localhost:8080/usuario/cadastrar,"
-				+ "\nexemplo: ["
-				+ "\n	{"
-				+ "\n	'nome': 'luciano',"
-				+ "\n	'email': 'lucianinho@email.com',"
-				+ "\n	'senha': '123'"
-				+ "\n	}"
-				+ "\n];"
-				+ "\nOBS: JSON no corpo da mensagem."
-				+ "\n-----------------------------"
-				+ "\nNome: editar Usuarios,"
-				+ "\nVerbo: PUT,"
-				+ "\nendereço: localhost:8080/usuario/{id},"
-				+ "\nexemplo: ["
-				+ "\n	{"
-				+ "\n	'nome': 'luciano',"
-				+ "\n	'email': 'lucianinhoEditado@email.com',"
-				+ "\n	'senha': '123'"
-				+ "\n	}"
-				+ "\n];"
-				+ "\nOBS: JSON no corpo da mensagem."
-				+ "\n-----------------------------"
-				+ "\nNome: remover Usuarios,"
-				+ "\nVerbo: DELETE,"
-				+ "\nendereço: localhost:8080/usuario/{id},"
-				+ "\nexemplo: [1,2,3,4,5];"
-				+ "";
-		return str;
-	}
-	
-	
-	
 }
